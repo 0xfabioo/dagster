@@ -21,9 +21,6 @@ from upath import UPath
 from dagster_azure.adls2.resources import ADLS2Resource
 from dagster_azure.adls2.utils import ResourceNotFoundError
 
-_LEASE_DURATION = 60  # One minute
-
-
 class PickledObjectADLS2IOManager(UPathIOManager):
     def __init__(
         self,
@@ -31,6 +28,7 @@ class PickledObjectADLS2IOManager(UPathIOManager):
         adls2_client: Any,
         blob_client: Any,
         lease_client_constructor: Any,
+        lease_duration: int = 60,
         prefix: str = "dagster",
     ):
         self.adls2_client = adls2_client
@@ -41,7 +39,7 @@ class PickledObjectADLS2IOManager(UPathIOManager):
         self.prefix = check.str_param(prefix, "prefix")
 
         self.lease_client_constructor = lease_client_constructor
-        self.lease_duration = _LEASE_DURATION
+        self.lease_duration = lease_duration
         self.file_system_client.get_file_system_properties()
         super().__init__(base_path=UPath(self.prefix))
 
